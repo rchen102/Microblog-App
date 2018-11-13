@@ -8,10 +8,16 @@
       <img [src]="post.imagePath" [alt]="post.title">
     </div>
     <p>{{ post.content }}</p>
-    <mat-action-row>
+    <mat-action-row *ngIf="userIsAuthenticated">
       <a mat-button color="primary" [routerLink]="['/edit', post.id]">Edit</a>
       <button mat-button color="warn" (click)="onDelete(post.id)">Delete</button>
     </mat-action-row>
   </mat-expansion-panel>
 </mat-accordion>
 <p class="info-text mat-body-1" *ngIf="posts.length <= 0 && !isLoading">No Post Yet</p>
+<mat-paginator
+  [length]="totalPosts"
+  [pageSize]="postsPerPage"
+  [pageSizeOptions]="pageSizeOptions"
+  (page)="onPageChanged($event)"
+  *ngIf="posts.length > 0"></mat-paginator>
