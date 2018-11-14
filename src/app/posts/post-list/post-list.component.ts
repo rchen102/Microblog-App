@@ -15,11 +15,13 @@ export class PostListComponent implements OnInit, OnDestroy {
   posts: Post[] = [];
   isLoading = false;
   userIsAuthenticated = false;
+  userId: string;
 
   totalPosts = 0;
   postsPerPage = 2;
   currentPage = 1;
   pageSizeOptions = [1, 2, 5, 10];
+
   private postsSub: Subscription;
   private authListenerSub: Subscription;
 
@@ -40,10 +42,12 @@ export class PostListComponent implements OnInit, OnDestroy {
         }
       );
     // Used for first time load this component, for it's only loaded after login, so it willnot receive the change
+    this.userId = this.authService.getUserId();
     this.userIsAuthenticated = this.authService.getIsAuth();
     this.authListenerSub = this.authService
       .getAuthStatusListener()
       .subscribe(isAuthenticated => {
+        this.userId = this.authService.getUserId();
         this.userIsAuthenticated = isAuthenticated;
       });
   }
@@ -52,6 +56,8 @@ export class PostListComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.postService.deletePost(postId).subscribe(() => {
       this.postService.getPosts(this.postsPerPage, this.currentPage);
+    }, () => {
+      this.isLoading = false;  // When there is error
     });
   }
 
